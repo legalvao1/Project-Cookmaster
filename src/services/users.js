@@ -14,9 +14,7 @@ const verifyUser = (name, email, password) => {
 };
 
 const getUserEmail = async (email) => {
-  console.log('Aqui');
   const emailExists = await model.getUserEmail(email);
-  console.log(emailExists);
   if (emailExists) {
     return {
       err: {
@@ -30,7 +28,6 @@ const getUserEmail = async (email) => {
 
 const createUser = async ({ name, email, password, role }) => {
   const user = await verifyUser(name, email, password);
-  console.log(user);
   if (user.err) return user;
 
   const emailIsAvailable = await getUserEmail(email);
