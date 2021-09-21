@@ -1,11 +1,10 @@
 const mongoConnection = require('./connection');
 
 const getUserEmail = async (email) => {
-  console.log(email);
   const db = await mongoConnection.getConnection();
-  const getEmail = await db.collection('users').findOne({ email });
+  const user = await db.collection('users').findOne({ email });
 
-  return getEmail !== null;
+  return user;
 };
 
 const create = async (name, email, password, role) => {
