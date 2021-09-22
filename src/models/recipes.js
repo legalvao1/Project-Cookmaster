@@ -22,8 +22,19 @@ const getRecipeById = async (id) => {
   return recipe;
 };
 
+const update = async (_id, { name, ingredients, preparation }, userId) => {
+  if (!ObjectId.isValid(_id)) return false;
+
+  const db = await mongoConnection.getConnection();
+  await db.collection('recipes').updateOne(
+    { _id: ObjectId(_id) }, { $set: { name, ingredients, preparation, userId } },
+    );
+  return { _id, name, ingredients, preparation, userId };
+};
+
 module.exports = {
   create,
+  update,
   getRecipes,
   getRecipeById,
 };
