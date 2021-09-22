@@ -55,9 +55,19 @@ const excludeRecipe = async (params) => {
   }
 };
 
+const addImage = async (params, file) => {
+  const recipeExist = await getRecipeById(params);
+  const imageName = `localhost:3000/src/${file.path}`;
+  if (recipeExist.err) return recipeExist;
+
+  const recipe = await model.addImage(recipeExist, imageName);
+  return recipe;
+};
+
 module.exports = {
   createRecipe,
   getRecipeById,
   updateRecipe,
   excludeRecipe,
+  addImage,
 };
