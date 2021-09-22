@@ -21,11 +21,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 const validateJWT = require('../middlewares/validateJWT');
+const validateAdmin = require('../middlewares/validateAdmin');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.post('/users', routes.users.createUser);
+app.post('/users/admin', validateJWT, validateAdmin, routes.users.createAdminUser);
 app.post('/login', routes.login);
 app.post('/recipes', validateJWT, routes.recipes.createRecipe);
 
