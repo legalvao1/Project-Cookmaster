@@ -32,7 +32,7 @@ const userIsValid = async (email, password) => {
       },
     };
   }
-  return true;
+  return user;
 };
 
 const login = async ({ email, password }) => {
@@ -42,14 +42,14 @@ const login = async ({ email, password }) => {
   const user = await userIsValid(email, password);
   if (user.err) return user;
 
-  const { _id: id, mail, role } = user;
+  const { _id: id, role } = user;
 
   const payload = {
     id,
-    mail,
+    email: user.email,
     role,
   };
-
+ 
   const token = jwt.sign({ data: payload }, secret, jwtConfiguration);
   return token;
 };
