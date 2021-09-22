@@ -34,7 +34,19 @@ const getRecipeById = async ({ id }) => {
   return recipe;
 };
 
+const updateRecipe = async (params, body, user) => {
+  const recipeExist = await getRecipeById(params);
+  if (recipeExist.err) return recipeExist;
+
+  const bodyIsValid = validateBody(body);
+  if (bodyIsValid.err) return bodyIsValid;
+
+  const recipe = await model.update(params.id, body, user.id);
+  return recipe;
+};
+
 module.exports = {
   createRecipe,
   getRecipeById,
+  updateRecipe,
 };
