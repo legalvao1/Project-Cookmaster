@@ -33,10 +33,18 @@ const excludeRecipe = async (req, res) => {
   res.sendStatus(204);
 };
 
+const addImage = async (req, res) => {
+  console.log(req.file);
+  const recipe = await service.addImage(req.params, req.file);
+  if (recipe.err) return res.status(recipe.err.code).json({ message: recipe.err.message });
+  res.status(200).json(recipe);
+};
+
 module.exports = {
   createRecipe,
   getRecipes,
   getRecipeById,
   updateRecipe,
   excludeRecipe,
+  addImage,
 };
