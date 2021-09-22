@@ -56,6 +56,7 @@
 
       response = await chai.request(server).post('/users')
         .send({
+          name: 'user',
           email: 'email@email.com',
           password: 'password-ok'
         });
@@ -86,8 +87,8 @@
 
     response = await chai.request(server).post('/users')
         .send({
-          name: 'user',
-          email: 'email@email.com',
+          name: 'user1',
+          email: 'user1@email.com',
           password: 'password-ok'
         });
     });
@@ -101,7 +102,7 @@
     });
 
     it('objeto de resposta possui a propriedade "_id, name, email, role"', () => {
-      expect(response.body).to.includes.keys('_id', 'name', 'email', 'role');
+      expect(response.body).to.have.property('user');
     });
   });
 });
