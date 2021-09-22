@@ -27,7 +27,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.post('/users', routes.users.createUser);
-app.post('/users/admin', validateJWT, validateAdmin, routes.users.createAdminUser);
+app.post('/users/admin', validateJWT, validateAdmin, routes.users.createUser);
 app.post('/login', routes.login);
 app.post('/recipes', validateJWT, routes.recipes.createRecipe);
 

@@ -26,27 +26,23 @@ const getUserEmail = async (email) => {
   return true;
 };
 
-const createUser = async ({ name, email, password, role }) => {
-  const user = await verifyUser(name, email, password);
-  if (user.err) return user;
-
-  const emailIsAvailable = await getUserEmail(email);
-  if (emailIsAvailable.err) return emailIsAvailable;
-
-  const userRole = !role ? 'user' : role;
-
-  const create = await model.create(name, email, password, userRole);
-  return create;
+const verifyRole = (role, path) => {
+  if (!role) {
+    if (path.includes('admin')) return 'admin';
+    return 'user';
+  }
+  return role;
 };
 
-const createAdminUser = async ({ name, email, password, role }) => {
+const createUser = async ({ name, email, password, role }, path) => {
   const user = await verifyUser(name, email, password);
   if (user.err) return user;
 
   const emailIsAvailable = await getUserEmail(email);
   if (emailIsAvailable.err) return emailIsAvailable;
 
-  const userRole = !role ? 'admin' : role;
+  const userRole = verifyRole(role, path);
+  console.log(userRole);
 
   const create = await model.create(name, email, password, userRole);
   return create;
@@ -54,5 +50,4 @@ const createAdminUser = async ({ name, email, password, role }) => {
 
 module.exports = {
   createUser,
-  createAdminUser,
 };
