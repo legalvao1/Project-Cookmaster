@@ -18,4 +18,6 @@ app.get('/recipes/:id', routes.recipes.getRecipeById);
 
 app.put('/recipes/:id', validateJWT, routes.recipes.updateRecipe);
 
+app.delete('/recipes/:id', validateJWT, routes.recipes.excludeRecipe);
+
 app.listen(PORT, () => console.log(`conectado na porta ${PORT}`));
