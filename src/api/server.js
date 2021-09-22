@@ -13,4 +13,6 @@ app.post('/users', routes.users.createUser);
 app.post('/login', routes.login);
 app.post('/recipes', validateJWT, routes.recipes.createRecipe);
 
+app.get('/recipes', routes.recipes.getRecipes);
+
 app.listen(PORT, () => console.log(`conectado na porta ${PORT}`));
