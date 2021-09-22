@@ -45,8 +45,19 @@ const updateRecipe = async (params, body, user) => {
   return recipe;
 };
 
+const excludeRecipe = async (params) => {
+  const recipeExist = await getRecipeById(params);
+  if (recipeExist.err) return recipeExist;
+
+  const recipe = await model.exclude(params.id);
+  if (recipe.deletedCount === 1) {
+    return recipe;
+  }
+};
+
 module.exports = {
   createRecipe,
   getRecipeById,
   updateRecipe,
+  excludeRecipe,
 };
