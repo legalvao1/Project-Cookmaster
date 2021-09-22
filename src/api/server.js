@@ -1,11 +1,14 @@
 const bodyParser = require('body-parser');
 const multer = require('multer');
+const fs = require('fs');
 const app = require('./app');
 const routes = require('./routes');
 
 const storage = multer.diskStorage({
-  destination: (_req, _file, callback) => {
-    callback(null, 'uploads');
+  destination: async (_req, _file, callback) => {
+    const folderName = './src/uploads';
+        fs.mkdirSync(folderName, { recursive: true });
+        callback(null, folderName);
   },
   filename: (req, file, callback) => {
     callback(null, `${req.params.id}.${file.mimetype.split('/')[1]}`);
