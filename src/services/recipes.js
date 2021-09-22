@@ -56,7 +56,6 @@ const excludeRecipe = async (params) => {
 };
 
 const addImage = async (params, file) => {
-  console.log(file);
   const recipeExist = await getRecipeById(params);
   const imageName = `localhost:3000/${file.path}`;
   if (recipeExist.err) return recipeExist;
