@@ -41,8 +41,6 @@ describe('POST /api/login', () => {
     it('a propriedade "message" tem o valor "All fields must be filled"', () => {
       expect(response.body.message).to.be.equals('All fields must be filled');
     });
-
-
   });
 
   describe('Quando pessoa usuária não existe ou senha é inválida', () => {
