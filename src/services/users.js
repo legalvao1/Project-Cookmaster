@@ -39,6 +39,20 @@ const createUser = async ({ name, email, password, role }) => {
   return create;
 };
 
+const createAdminUser = async ({ name, email, password, role }) => {
+  const user = await verifyUser(name, email, password);
+  if (user.err) return user;
+
+  const emailIsAvailable = await getUserEmail(email);
+  if (emailIsAvailable.err) return emailIsAvailable;
+
+  const userRole = !role ? 'admin' : role;
+
+  const create = await model.create(name, email, password, userRole);
+  return create;
+};
+
 module.exports = {
   createUser,
+  createAdminUser,
 };
