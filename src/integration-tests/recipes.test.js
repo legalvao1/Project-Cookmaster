@@ -7,6 +7,7 @@ const { MongoClient } = require('mongodb');
 const { getConnection } = require('./connectionMock');
 const server = require('../api/app');
 const { ObjectId } = require('mongodb');
+const fs = require('fs');
 
 describe('POST /recipes', () => {
 
@@ -18,6 +19,33 @@ describe('POST /recipes', () => {
 
   after(async () => {
     MongoClient.connect.restore();
+  });
+
+  describe('Quando token não é enviado', () => {
+    let response;
+    before(async () => {
+
+          
+      response = await chai.request(server).post('/recipes')
+        .set('authorization', '')
+        .send({ name: 'Receita', ingredients: 'ingredientes', preparation: 'preparo'})
+    });
+
+    it('retorna código de status 401', () => {
+      expect(response).to.have.status(401);
+    });
+
+    it('retorna um object no body', () => {
+      expect(response.body).to.be.an('object')
+    })
+
+    it('objeto de resposta possui a propriedade "message"', () => {
+      expect(response.body).to.have.property('message');
+    });
+
+    it('a propriedade "message" tem o valor "missing auth token"', () => {
+      expect(response.body.message).to.be.equals('missing auth token');
+    });
   });
 
   describe('Quando token é inválido', () => {
@@ -334,7 +362,6 @@ describe('DELETE /recipes/:id', () => {
     });
 
     it('retorna um object no body', () => {
-      console.log(response.body);
       expect(response.body).to.be.an('object')
     })
 
@@ -343,3 +370,48 @@ describe('DELETE /recipes/:id', () => {
     });
   });
 });
+
+// describe('PUT /recipes/:id/images', () => {
+
+//   let connectionMock;
+//   before(async () => {
+//     connectionMock = await getConnection();
+//     sinon.stub(MongoClient, 'connect').resolves(connectionMock);
+//   });
+
+//   after(async () => {
+//     MongoClient.connect.restore();
+//   });
+
+//   describe('Quando adiciona a imagem a receita', () => {
+//     let response;
+//     before(async () => {
+//       const emample_id = '604cb554311d68f491ba5781'
+
+//       //TODO: Fazer login
+//       const authResponse = await chai.request(server).post('/login').send({
+//         email: 'email@email.com',
+//         password: 'password-ok'
+//       })
+
+//       const token = authResponse.body.token;
+       
+//       response = await chai.request(server).put(`/recipes/${emample_id}/image`)
+//         .set('authorization', token)
+//         .attach('image', fs.readFileSync('/home/leticia/Projetos/sd-010-b-cookmaster/src/uploads/ratinho.png'), 'uploads/ratinho.png')
+//     });
+
+//     it('retorna código de status 200', () => {
+//       console.log(response);
+//       expect(response).to.have.status(200);
+//     });
+
+//     it('retorna um object no body', () => {
+//       expect(response.body).to.be.an('object')
+//     })
+
+//     it('objeto incluem as chaves "_id, name, ingredients, preparation, userId, image"', () => {
+//       expect(response.body).to.includes.keys('_id', 'name', 'ingredients', 'preparation', 'userId', 'image');
+//     });
+//   });
+// });

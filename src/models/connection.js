@@ -17,10 +17,10 @@ async function getConnection() {
     .then((dbSchema) => {
       schema = dbSchema;
       return schema;
-    })
-    .catch((err) => {
-      console.error(err);
     });
+    // .catch((err) => {
+    //   console.error(err);
+    // });
 }
 
 module.exports = { getConnection };
