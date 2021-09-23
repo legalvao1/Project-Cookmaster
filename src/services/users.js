@@ -42,8 +42,7 @@ const createUser = async ({ name, email, password, role }, path) => {
   if (emailIsAvailable.err) return emailIsAvailable;
 
   const userRole = verifyRole(role, path);
-  console.log(userRole);
-
+ 
   const create = await model.create(name, email, password, userRole);
   return create;
 };
