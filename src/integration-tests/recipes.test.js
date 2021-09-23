@@ -6,6 +6,7 @@ const { expect } = chai;
 const { MongoClient } = require('mongodb');
 const { getConnection } = require('./connectionMock');
 const server = require('../api/app');
+const { ObjectId } = require('mongodb');
 
 describe('POST /recipes', () => {
 
@@ -127,6 +128,218 @@ describe('POST /recipes', () => {
 
     it('a propriedade "message" tem o valor "id, name, ingredientes, preparation, userId"', () => {
       expect(response.body.recipe).to.includes.keys('_id', 'name', 'ingredients', 'preparation', 'userId');
+    });
+  });
+});
+
+describe('GET /recipes', () => {
+
+  let connectionMock;
+  before(async () => {
+    connectionMock = await getConnection();
+    sinon.stub(MongoClient, 'connect').resolves(connectionMock);
+  });
+
+  after(async () => {
+    MongoClient.connect.restore();
+  });
+
+  describe('Quando não tem receitas cadastradas', () => {
+    let response;
+    before(async () => {
+    
+      response = await chai.request(server).get('/recipes')
+    });
+
+    it('retorna código de status 200', () => {
+      expect(response).to.have.status(200);
+    });
+
+    it('retorna um array no body', () => {
+      expect(response.body).to.be.an('array')
+    })
+  });
+
+  describe('Quando tem receita cadastrada', () => {
+    let response;
+    before(async () => {
+
+      const userCollection = connectionMock.db('Cookmaster').collection('recipes')
+      await userCollection.insertOne({
+        name: 'name',
+        ingredientes: 'ingredientes',
+        preparation: 'preparo'
+      })
+   
+      response = await chai.request(server).get('/recipes')
+    });
+
+      it('retorna código de status 200', () => {
+      expect(response).to.have.status(200);
+    });
+
+    it('retorna um array no body', () => {
+      expect(response.body).to.be.an('array')
+    })
+
+    it('O array não está vazio', () => {
+      expect(response.body).to.be.not.empty;
+    });
+  });
+});
+
+describe('GET /recipes/:id', () => {
+
+  let connectionMock;
+  before(async () => {
+    connectionMock = await getConnection();
+    sinon.stub(MongoClient, 'connect').resolves(connectionMock);
+  });
+
+  after(async () => {
+    MongoClient.connect.restore();
+  });
+
+  describe('Quando não encontra a receita', () => {
+    let response;
+    before(async () => {
+      const emample_id = '604cb554311d68f491ba5781'
+   
+      response = await chai.request(server).get(`/recipes/${emample_id}`)
+    });
+
+    it('retorna código de status 404', () => {
+      expect(response).to.have.status(404);
+    });
+
+    it('retorna um object no body', () => {
+      expect(response.body).to.be.an('object')
+    })
+
+    it('objeto de resposta possui a propriedade "message"', () => {
+      expect(response.body).to.have.property('message');
+    });
+
+    it('a propriedade "message" tem o valor "recipe not found"', () => {
+      expect(response.body.message).to.be.equals('recipe not found');
+    });
+  });
+
+  describe('Quando encontra a receita', () => {
+    let response;
+    before(async () => {
+      const emample_id = '604cb554311d68f491ba5781'
+
+      const userCollection = connectionMock.db('Cookmaster').collection('recipes')
+      await userCollection.insertOne({
+        _id: ObjectId(emample_id),
+        name: 'name',
+        ingredients: 'ingredientes',
+        preparation: 'preparo'
+      })
+   
+   
+      response = await chai.request(server).get(`/recipes/${emample_id}`)
+    });
+
+      it('retorna código de status 200', () => {
+      expect(response).to.have.status(200);
+    });
+
+    it('retorna um object no body', () => {
+      expect(response.body).to.be.an('object')
+    })
+
+    it('objeto de resposta possui a propriedade "message"', () => {
+      expect(response.body).to.includes.keys('_id', 'name', 'ingredients', 'preparation');
+    });
+  });
+});
+
+describe('PUT /recipes/:id', () => {
+
+  let connectionMock;
+  before(async () => {
+    connectionMock = await getConnection();
+    sinon.stub(MongoClient, 'connect').resolves(connectionMock);
+  });
+
+  after(async () => {
+    MongoClient.connect.restore();
+  });
+
+  describe('Quando atualiza a receita', () => {
+    let response;
+    before(async () => {
+      const emample_id = '604cb554311d68f491ba5781'
+
+      //TODO: Fazer login
+      const authResponse = await chai.request(server).post('/login').send({
+        email: 'email@email.com',
+        password: 'password-ok'
+      })
+
+      const token = authResponse.body.token;
+       
+      response = await chai.request(server).put(`/recipes/${emample_id}`)
+        .set('authorization', token)
+        .send({ name: 'nome', ingredients: 'ingredients', preparation: 'preparation'})
+    });
+
+    it('retorna código de status 200', () => {
+      expect(response).to.have.status(200);
+    });
+
+    it('retorna um object no body', () => {
+      expect(response.body).to.be.an('object')
+    })
+
+    it('objeto incluem as chaves "_id, name, ingredients, preparation, userId"', () => {
+      expect(response.body).to.includes.keys('_id', 'name', 'ingredients', 'preparation', 'userId');
+    });
+  });
+});
+
+describe('DELETE /recipes/:id', () => {
+
+  let connectionMock;
+  before(async () => {
+    connectionMock = await getConnection();
+    sinon.stub(MongoClient, 'connect').resolves(connectionMock);
+  });
+
+  after(async () => {
+    MongoClient.connect.restore();
+  });
+
+  describe('Quando deleta a receita', () => {
+    let response;
+    before(async () => {
+      const emample_id = '604cb554311d68f491ba5781'
+
+      //TODO: Fazer login
+      const authResponse = await chai.request(server).post('/login').send({
+        email: 'email@email.com',
+        password: 'password-ok'
+      })
+
+      const token = authResponse.body.token;
+       
+      response = await chai.request(server).delete(`/recipes/${emample_id}`)
+        .set('authorization', token)
+    });
+
+    it('retorna código de status 204', () => {
+      expect(response).to.have.status(204);
+    });
+
+    it('retorna um object no body', () => {
+      console.log(response.body);
+      expect(response.body).to.be.an('object')
+    })
+
+    it('objeto está vazio', () => {
+      expect(response.body).to.be.empty;
     });
   });
 });
