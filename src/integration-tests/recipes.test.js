@@ -278,8 +278,42 @@ describe('GET /recipes/:id', () => {
       expect(response.body).to.be.an('object')
     })
 
-    it('objeto de resposta possui a propriedade "message"', () => {
+    it('objeto de resposta possui as chaves "id, name, ingredients, preparation"', () => {
       expect(response.body).to.includes.keys('_id', 'name', 'ingredients', 'preparation');
+    });
+  });
+
+  describe('Quando ObjectId é falso', () => {
+    let response;
+    before(async () => {
+      const emample_id = '604cb554311d68f491ba578'
+
+      const userCollection = connectionMock.db('Cookmaster').collection('recipes')
+      await userCollection.insertOne({
+        _id: emample_id,
+        name: 'name',
+        ingredients: 'ingredientes',
+        preparation: 'preparo'
+      })
+   
+   
+      response = await chai.request(server).get(`/recipes/${emample_id}`)
+    });
+
+      it('retorna código de status 404', () => {
+      expect(response).to.have.status(404);
+    });
+
+    it('retorna um object no body', () => {
+      expect(response.body).to.be.an('object')
+    })
+
+    it('objeto de resposta possui a propriedade "message"', () => {
+      expect(response.body).to.have.property('message');
+    });
+
+    it('a propriedade "message" tem o valor "recipe not found"', () => {
+      expect(response.body.message).to.be.equals('recipe not found');
     });
   });
 });
@@ -326,6 +360,84 @@ describe('PUT /recipes/:id', () => {
       expect(response.body).to.includes.keys('_id', 'name', 'ingredients', 'preparation', 'userId');
     });
   });
+
+  describe('Quando algum item do body é inválido', () => {
+    let response;
+    before(async () => {
+      const emample_id = '604cb554311d68f491ba5781'
+
+      //TODO: Fazer login
+      const authResponse = await chai.request(server).post('/login').send({
+        email: 'email@email.com',
+        password: 'password-ok'
+      })
+
+      const token = authResponse.body.token;
+       
+      response = await chai.request(server).put(`/recipes/${emample_id}`)
+        .set('authorization', token)
+        .send({ name: 'nome', ingredients: 'ingredients', preparation: ''})
+    });
+
+    it('retorna código de status 400', () => {
+      expect(response).to.have.status(400);
+    });
+
+    it('retorna um object no body', () => {
+      expect(response.body).to.be.an('object')
+    })
+
+    it('objeto de resposta possui a propriedade "message"', () => {
+      expect(response.body).to.have.property('message');
+    });
+
+    it('a propriedade "message" tem o valor "Invalid entries. Try again."', () => {
+      expect(response.body.message).to.be.equals('Invalid entries. Try again.');
+    });
+  });
+
+  describe('Quando ObjectId é falso', () => {
+    let response;
+    before(async () => {
+      const emample_id = '1'
+
+      const userCollection = connectionMock.db('Cookmaster').collection('recipes')
+      await userCollection.insertOne({
+        _id: emample_id,
+        name: 'name',
+        ingredients: 'ingredientes',
+        preparation: 'preparo'
+      })
+
+      const authResponse = await chai.request(server).post('/login').send({
+        email: 'email@email.com',
+        password: 'password-ok'
+      })
+
+      const token = authResponse.body.token;
+   
+   
+      response = await chai.request(server).put(`/recipes/${emample_id}`)
+        .set('authorization', token)
+        .send({ name: 'nome', ingredients: 'ingredients', preparation: 'preparation'})
+    });
+
+      it('retorna código de status 404', () => {
+      expect(response).to.have.status(404);
+    });
+
+    it('retorna um object no body', () => {
+      expect(response.body).to.be.an('object')
+    })
+
+    it('objeto de resposta possui a propriedade "message"', () => {
+      expect(response.body).to.have.property('message');
+    });
+
+    it('a propriedade "message" tem o valor "recipe not found"', () => {
+      expect(response.body.message).to.be.equals('recipe not found');
+    });
+  });
 });
 
 describe('DELETE /recipes/:id', () => {
@@ -369,6 +481,73 @@ describe('DELETE /recipes/:id', () => {
       expect(response.body).to.be.empty;
     });
   });
+
+  describe('Quando não encontra a receita', () => {
+    let response;
+    before(async () => {
+      const emample_id = '604cb554311d68f491ba5'
+
+      //TODO: Fazer login
+      const authResponse = await chai.request(server).post('/login').send({
+        email: 'email@email.com',
+        password: 'password-ok'
+      })
+
+      const token = authResponse.body.token;
+       
+      response = await chai.request(server).delete(`/recipes/${emample_id}`)
+        .set('authorization', token)
+    });
+
+    it('retorna código de status 404', () => {
+      expect(response).to.have.status(404);
+    });
+
+    it('retorna um object no body', () => {
+      expect(response.body).to.be.an('object')
+    })
+
+    it('objeto de resposta possui a propriedade "message"', () => {
+      expect(response.body).to.have.property('message');
+    });
+
+    it('a propriedade "message" tem o valor "recipe not found"', () => {
+      expect(response.body.message).to.be.equals('recipe not found');
+    });
+  });
+
+  describe('Quando ObjectId é falso', () => {
+    let response;
+    before(async () => {
+      const emample_id = '604cb554311d68f491ba578'
+
+      const authResponse = await chai.request(server).post('/login').send({
+        email: 'email@email.com',
+        password: 'password-ok'
+      })
+
+      const token = authResponse.body.token;
+      
+      response = await chai.request(server).delete(`/recipes/${emample_id}`)
+        .set('authorization', token)
+    });
+
+      it('retorna código de status 404', () => {
+      expect(response).to.have.status(404);
+    });
+
+    it('retorna um object no body', () => {
+      expect(response.body).to.be.an('object')
+    })
+
+    it('objeto de resposta possui a propriedade "message"', () => {
+      expect(response.body).to.have.property('message');
+    });
+
+    it('a propriedade "message" tem o valor "recipe not found"', () => {
+      expect(response.body.message).to.be.equals('recipe not found');
+    });
+  });
 });
 
 describe('PUT /recipes/:id/images', () => {
@@ -388,6 +567,15 @@ describe('PUT /recipes/:id/images', () => {
     before(async () => {
       const emample_id = '604cb554311d68f491ba5781'
 
+      const userCollection = connectionMock.db('Cookmaster').collection('recipes')
+      await userCollection.insertOne({
+        _id: ObjectId(emample_id),
+        name: 'name',
+        ingredients: 'ingredientes',
+        preparation: 'preparo',
+        userId: '604cb554311d68f491ba5782'
+      })
+
       //TODO: Fazer login
       const authResponse = await chai.request(server).post('/login').send({
         email: 'email@email.com',
@@ -402,7 +590,6 @@ describe('PUT /recipes/:id/images', () => {
     });
 
     it('retorna código de status 200', () => {
-      console.log(response);
       expect(response).to.have.status(200);
     });
 
@@ -411,8 +598,54 @@ describe('PUT /recipes/:id/images', () => {
     })
 
     it('objeto incluem as chaves "_id, name, ingredients, preparation, userId, image"', () => {
-      console.log(response.body);
       expect(response.body).to.includes.keys('_id', 'name', 'ingredients', 'preparation', 'userId', 'image');
     });
   });
+
+  describe('Quando não encontra a receita', () => {
+    let response;
+    before(async () => {
+      const emample_id = '604cb554311d68f491ba57'
+
+ 
+      //TODO: Fazer login
+      const authResponse = await chai.request(server).post('/login').send({
+        email: 'email@email.com',
+        password: 'password-ok'
+      })
+
+      const token = authResponse.body.token;
+       /**SOURCE https://www.codementor.io/@seunsomefun/writing-tests-for-image-file-uploads-in-nodejs-1byoggozxw */
+      response = await chai.request(server).put(`/recipes/${emample_id}/image`)
+        .set('authorization', token)
+        .attach('image', fs.readFileSync('/home/leticia/Projetos/sd-010-b-cookmaster/src/uploads/ratinho.jpg'), 'uploads/ratinho.png')
+    });
+
+    it('retorna código de status 404', () => {
+      expect(response).to.have.status(404);
+    });
+
+    it('retorna um object no body', () => {
+      expect(response.body).to.be.an('object')
+    })
+
+    it('objeto de resposta possui a propriedade "message"', () => {
+      expect(response.body).to.have.property('message');
+    });
+
+    it('a propriedade "message" tem o valor "recipe not found"', () => {
+      expect(response.body.message).to.be.equals('recipe not found');
+    });
+  });
+});
+
+describe('GET "/"', () => {
+  let response;
+  before(async () => {
+    response = await chai.request(server).get('/').send();
+  });
+
+  it('retorna o status 200', () => {
+    expect(response).to.have.status(200);
+  })
 });
