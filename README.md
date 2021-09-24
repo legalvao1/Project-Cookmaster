@@ -493,9 +493,9 @@ Para iniciar o desenvolvimento, é necessário clonar o repositório do GitHub, 
 ```shell
 cd "diretorio de sua preferencia"
 
-git clone git@github.com:legalvao1/Project-TrybeWallet.git
+git clone git@github.com:legalvao1/Project-Cookmaster.git
 
-cd Project-TrybeWallet
+cd Project-Cookmaster
 
 npm install
 
