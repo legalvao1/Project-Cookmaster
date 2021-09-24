@@ -371,47 +371,48 @@ describe('DELETE /recipes/:id', () => {
   });
 });
 
-// describe('PUT /recipes/:id/images', () => {
+describe('PUT /recipes/:id/images', () => {
 
-//   let connectionMock;
-//   before(async () => {
-//     connectionMock = await getConnection();
-//     sinon.stub(MongoClient, 'connect').resolves(connectionMock);
-//   });
+  let connectionMock;
+  before(async () => {
+    connectionMock = await getConnection();
+    sinon.stub(MongoClient, 'connect').resolves(connectionMock);
+  });
 
-//   after(async () => {
-//     MongoClient.connect.restore();
-//   });
+  after(async () => {
+    MongoClient.connect.restore();
+  });
 
-//   describe('Quando adiciona a imagem a receita', () => {
-//     let response;
-//     before(async () => {
-//       const emample_id = '604cb554311d68f491ba5781'
+  describe('Quando adiciona a imagem a receita', () => {
+    let response;
+    before(async () => {
+      const emample_id = '604cb554311d68f491ba5781'
 
-//       //TODO: Fazer login
-//       const authResponse = await chai.request(server).post('/login').send({
-//         email: 'email@email.com',
-//         password: 'password-ok'
-//       })
+      //TODO: Fazer login
+      const authResponse = await chai.request(server).post('/login').send({
+        email: 'email@email.com',
+        password: 'password-ok'
+      })
 
-//       const token = authResponse.body.token;
-       
-//       response = await chai.request(server).put(`/recipes/${emample_id}/image`)
-//         .set('authorization', token)
-//         .attach('image', fs.readFileSync('/home/leticia/Projetos/sd-010-b-cookmaster/src/uploads/ratinho.png'), 'uploads/ratinho.png')
-//     });
+      const token = authResponse.body.token;
+       /**SOURCE https://www.codementor.io/@seunsomefun/writing-tests-for-image-file-uploads-in-nodejs-1byoggozxw */
+      response = await chai.request(server).put(`/recipes/${emample_id}/image`)
+        .set('authorization', token)
+        .attach('image', fs.readFileSync('/home/leticia/Projetos/sd-010-b-cookmaster/src/uploads/ratinho.jpg'), 'uploads/ratinho.png')
+    });
 
-//     it('retorna código de status 200', () => {
-//       console.log(response);
-//       expect(response).to.have.status(200);
-//     });
+    it('retorna código de status 200', () => {
+      console.log(response);
+      expect(response).to.have.status(200);
+    });
 
-//     it('retorna um object no body', () => {
-//       expect(response.body).to.be.an('object')
-//     })
+    it('retorna um object no body', () => {
+      expect(response.body).to.be.an('object')
+    })
 
-//     it('objeto incluem as chaves "_id, name, ingredients, preparation, userId, image"', () => {
-//       expect(response.body).to.includes.keys('_id', 'name', 'ingredients', 'preparation', 'userId', 'image');
-//     });
-//   });
-// });
+    it('objeto incluem as chaves "_id, name, ingredients, preparation, userId, image"', () => {
+      console.log(response.body);
+      expect(response.body).to.includes.keys('_id', 'name', 'ingredients', 'preparation', 'userId', 'image');
+    });
+  });
+});
