@@ -1,4 +1,4 @@
-# Projeto Cookmaster
+# Boas vindas ao repositório do Cookmaster
 
 #### Este projeto faz parte da formação Full Stack da <a href="https://www.betrybe.com/">Trybe</a>.
 
