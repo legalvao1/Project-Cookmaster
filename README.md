@@ -4,7 +4,7 @@
 
 ## Introdução
 
-Neste projeto desenvolvemos uma API utilizando arquitetura MSC, em que será possível fazer o cadastro e login de pessoas usuárias, e para realizar qualquer tipo de alteração no banco de dados (como cadastro, edição ou exclusão de receitas) será necessário autenticar-se. Além disso, as pessoas usuárias devem poder ser clientes ou administradores. Pessoas clientes apenas poderão disparar ações nas receitas que ele mesmo criou. Já uma pessoa administradora pode disparar qualquer ação em qualquer receita.
+Neste projeto desenvolvemos uma API utilizando arquitetura MSC(Models, Service e Controllers) , em que será possível fazer o cadastro e login de pessoas usuárias, e para realizar qualquer tipo de alteração no banco de dados (como cadastro, edição ou exclusão de receitas) será necessário autenticar-se. Além disso, as pessoas usuárias devem poder ser clientes ou administradores. Pessoas clientes apenas poderão disparar ações nas receitas que ele mesmo criou. Já uma pessoa administradora pode disparar qualquer ação em qualquer receita.
 
 ---
 
